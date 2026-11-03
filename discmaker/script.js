@@ -194,7 +194,7 @@ async function downloadData() {
     }
 
     var zip = new JSZip()
-    zip.file("pack.mcmeta", `{"pack":{"pack_format":${DATA_PACK_VERSION},"description":"DiscMaker Data: ${trackName}"}}`)
+    zip.file("pack.mcmeta", `{"pack":{"pack_format":${MIN_DATA_PACK_VERSION},"min_format":${MIN_DATA_PACK_VERSION},"max_format":${MAX_DATA_PACK_VERSION},"supported_formats":[${MIN_DATA_PACK_VERSION},${MAX_DATA_PACK_VERSION}],"description":"DiscMaker Data: ${trackName}"}}`)
 
     zip.folder("data")
         .folder("discmaker")
@@ -260,13 +260,14 @@ async function downloadResources() {
         }
     
         var zip = new JSZip()
-        zip.file("pack.mcmeta", `{"pack":{"pack_format":${RESOURCE_PACK_VERSION},"description":"DiscMaker Resources: ${trackName}"}}`)
+        zip.file("pack.mcmeta", `{"pack":{"pack_format":${MIN_RESOURCE_PACK_VERSION},"min_format":${MIN_RESOURCE_PACK_VERSION},"max_format":${MAX_RESOURCE_PACK_VERSION},"supported_formats":[${MIN_RESOURCE_PACK_VERSION},${MAX_RESOURCE_PACK_VERSION}],"description":"DiscMaker Resources: ${trackName}"}}`)
         zip.file("pack.png", generatePackIcon())
     
         var assetsDir = zip.folder("assets")
         
         var discmakerDir = assetsDir.folder("discmaker")
         var langDir = discmakerDir.folder("lang")
+        var itemsDir = discmakerDir.folder("items")
         var texturesDir = discmakerDir.folder("textures").folder("item")
         var modelsDir = discmakerDir.folder("models").folder("item")
         var recordsDir = discmakerDir.folder("sounds").folder("records")
@@ -284,6 +285,7 @@ async function downloadResources() {
         texturesDir.file(`${hash}.png`, blob)
     
         discmakerDir.file("sounds.json", `{"music_disc.${hash}":{"sounds":[{"name":"discmaker:records/${hash}","stream":true}]}}`)
+        itemsDir.file(`${hash}.json`, `{"model":{"type":"minecraft:model","model":"discmaker:item/${hash}"}}`)
         modelsDir.file(`${hash}.json`, `{"parent":"minecraft:item/template_music_disc","textures":{"layer0":"discmaker:item/${hash}"}}`)
     
         zip.generateAsync({type:"base64"}).then(b64 => {

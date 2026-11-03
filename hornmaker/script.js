@@ -185,7 +185,7 @@ async function downloadData() {
     }
 
     var zip = new JSZip()
-    zip.file("pack.mcmeta", `{"pack":{"pack_format":${DATA_PACK_VERSION},"description":"HornMaker Data: ${soundName}"}}`)
+    zip.file("pack.mcmeta", `{"pack":{"pack_format":${MAX_DATA_PACK_VERSION},"min_format":${MIN_DATA_PACK_VERSION},"max_format":${MAX_DATA_PACK_VERSION},"supported_formats":[${MIN_DATA_PACK_VERSION},${MAX_DATA_PACK_VERSION}],"description":"HornMaker Data: ${soundName}"}}`)
 
     zip.folder("data")
         .folder("hornmaker")
@@ -251,7 +251,7 @@ async function downloadResources() {
         }
     
         var zip = new JSZip()
-        zip.file("pack.mcmeta", `{"pack":{"pack_format":${RESOURCE_PACK_VERSION},"description":"HornMaker Resources: ${soundName}"}}`)
+        zip.file("pack.mcmeta", `{"pack":{"pack_format":${MAX_RESOURCE_PACK_VERSION},"min_format":${MIN_RESOURCE_PACK_VERSION},"max_format":${MAX_RESOURCE_PACK_VERSION},"supported_formats":[${MIN_RESOURCE_PACK_VERSION},${MAX_RESOURCE_PACK_VERSION}],"overlays":{"entries":[{"directory":"pre1214","min_format":${MIN_RESOURCE_PACK_VERSION},"max_format":44,"supported_formats":[${MIN_RESOURCE_PACK_VERSION},44]}]},"description":"HornMaker Resources: ${soundName}"}}`)
         zip.file("pack.png", generatePackIcon())
     
         var assetsDir = zip.folder("assets")
@@ -259,10 +259,14 @@ async function downloadResources() {
         var hornmakerDir = assetsDir.folder("hornmaker")
         var langDir = hornmakerDir.folder("lang")
         var texturesDir = hornmakerDir.folder("textures").folder("item")
+        var itemsDir = hornmakerDir.folder("items")
         var modelsDir = hornmakerDir.folder("models").folder("item")
         var recordsDir = hornmakerDir.folder("sounds").folder("goat_horn")
     
-    
+
+        var overlayAssetsDir = zip.folder("pre1214").folder("assets")
+        var overlayModelsDir = overlayAssetsDir.folder("models").folder("item")
+
         langDir.file("en_us.json", `{"instrument.hornmaker.${hash}":"${soundName}"}`)
     
         try {
@@ -275,8 +279,12 @@ async function downloadResources() {
         texturesDir.file(`${hash}.png`, blob)
     
         hornmakerDir.file("sounds.json", `{"goat_horn.${hash}":{"subtitle":"subtitles.item.goat_horn.play","sounds":[{"name":"hornmaker:goat_horn/${hash}"}]}}`)
-        modelsDir.file(`${hash}.json`, `{"parent":"minecraft:item/goat_horn","textures":{"layer0":"hornmaker:item/${hash}"},"overrides":[{"predicate":{"tooting":1},"model":"hornmaker:item/${hash}_tooting"}]}`)
+        itemsDir.file(`${hash}.json`, `{"model":{"type":"minecraft:condition","on_false":{"type":"minecraft:model","model":"hornmaker:item/${hash}"},"on_true":{"type":"minecraft:model","model":"hornmaker:item/${hash}_tooting"},"property":"minecraft:using_item"}}`)
+        modelsDir.file(`${hash}.json`, `{"parent":"minecraft:item/goat_horn","textures":{"layer0":"hornmaker:item/${hash}"}}`)
         modelsDir.file(`${hash}_tooting.json`, `{"parent":"minecraft:item/tooting_goat_horn","textures":{"layer0":"hornmaker:item/${hash}"}}`)
+
+        // Overlay
+        overlayModelsDir.file(`${hash}.json`, `{"parent":"minecraft:item/goat_horn","textures":{"layer0":"hornmaker:item/${hash}"},"overrides":[{"predicate":{"tooting":1},"model":"hornmaker:item/${hash}_tooting"}]}`)
     
         zip.generateAsync({type:"base64"}).then(b64 => {
         
