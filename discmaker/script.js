@@ -153,8 +153,8 @@ function updateCommand() {
 
     hash = cyrb53(trackName)
 
-    commandDiv.innerHTML = `<p>/give @s minecraft:music_disc_cat[minecraft:item_model="discmaker:${hash}",minecraft:jukebox_playable={song:"discmaker:${hash}"}]</p>`
-    itemDiv.innerHTML = `<p>{"id":"minecraft:music_disc_cat","count":1,"components":{"minecraft:item_model":"discmaker:${hash}","minecraft:jukebox_playable": { "song": "discmaker:${hash}" }}}`
+    commandDiv.innerHTML = `<p>/give @s minecraft:music_disc_cat[minecraft:item_model="discmaker:${hash}",minecraft:jukebox_playable="discmaker:${hash}"]</p>`
+    itemDiv.innerHTML = `<p>{"id":"minecraft:music_disc_cat","count":1,"components":{"minecraft:item_model":"discmaker:${hash}","minecraft:jukebox_playable":"discmaker:${hash}"}}`
 
 }
 
